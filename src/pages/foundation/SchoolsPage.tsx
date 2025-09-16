@@ -7,6 +7,16 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Filter, Plus, MapPin, Users, Star } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
 
 export default function SchoolsPage() {
   const { t } = useTranslation();
@@ -110,10 +120,39 @@ export default function SchoolsPage() {
             {t('manage_all_schools_and_daycare_centers')}
           </p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          {t('new_school')}
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              {t('new_school')}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>{t('register_new_school')}</DialogTitle>
+              <DialogDescription>
+                {t('fill_school_details_description')}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  {t('name')}
+                </Label>
+                <Input id="name" placeholder={t('school_name_placeholder')} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="manager" className="text-right">
+                  {t('manager')}
+                </Label>
+                <Input id="manager" placeholder={t('manager_name_placeholder')} className="col-span-3" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">{t('save_changes')}</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Filters */}

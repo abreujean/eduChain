@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { CheckCircle, XCircle, Eye, MapPin, Users, FileText, AlertCircle } from 'lucide-react';
 
 export default function ApprovalsPage() {
+  const { t } = useTranslation();
   const [selectedSchool, setSelectedSchool] = useState<any>(null);
   const [reviewComment, setReviewComment] = useState('');
   const [schoolStatuses, setSchoolStatuses] = useState<{[key: string]: string}>({});
@@ -133,9 +135,9 @@ export default function ApprovalsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Aprovações Pendentes</h1>
+        <h1 className="text-3xl font-bold">{t('pending_approvals')}</h1>
         <p className="text-muted-foreground">
-          Revise e aprove novos cadastros de escolas e creches
+          {t('manage_school_approvals_description')}
         </p>
       </div>
 

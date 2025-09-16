@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next'; // Importe o hook
 import { useAuth } from '@/contexts/AuthContext';
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -14,10 +14,25 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Bell, Wallet, LogOut, Settings, User, Languages } from 'lucide-react'; // Adicione o ícone Languages
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useNavigate } from 'react-router-dom';
 
 export function Header() {
   const { state, logout, connectWallet, disconnectWallet } = useAuth();
   const { t, i18n } = useTranslation(); // Inicialize o hook
+  const [showError, setShowError] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (state.error) {
+      setShowError(true);
+      const timer = setTimeout(() => {
+        setShowError(false);
+        navigate('/dashboard'); // ou a rota que desejar
+      }, 5000); // 5 segundos
+      return () => clearTimeout(timer);
+    }
+  }, [state.error, navigate]);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -40,6 +55,12 @@ export function Header() {
 
   return (
     <header className="h-16 border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      {showError && (
+        <Alert variant="destructive">
+          <AlertTitle>{t('error')}</AlertTitle>
+          <AlertDescription>{state.error}</AlertDescription>
+        </Alert>
+      )}
       <div className="flex h-full items-center justify-between px-6">
         <div className="flex items-center gap-4">
           <SidebarTrigger className="h-8 w-8" />

@@ -144,7 +144,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-      dispatch({ type: 'WALLET_CONNECT_FAILURE', payload: t('wallet_connect_error', { message: errorMessage }) });
+      dispatch({ type: 'WALLET_CONNECT_FAILURE', payload: 'Extensão não instalada ou não conectada. Instale a extensão ou conecte sua carteira.' });
       console.error(error);
     }
   };

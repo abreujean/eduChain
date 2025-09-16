@@ -29,12 +29,15 @@ interface DonationModalProps {
   onClose: () => void;
   schools: School[];
   walletAddress: string | { address: string };
+  walletBalance: string;
 }
 
-const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose, schools, walletAddress }) => {
+const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose, schools, walletAddress, walletBalance }) => {
   if (!isOpen) return null;
 
   const totalDonation = schools.reduce((acc, school) => acc + (school.donationInstallmentValue || 0), 0);
+  const balance = parseFloat(walletBalance);
+  const isBalanceInsufficient = totalDonation > balance;
 
   const abbreviateWalletAddress = (address: string | { address: string }) => {
     if (!address) return '';
@@ -90,13 +93,18 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose, schools,
             <div className="text-xl font-bold my-4 text-right">
               Valor Total da Doação: ${totalDonation.toFixed(2)}
             </div>
+            {isBalanceInsufficient && (
+              <p className="text-red-500 text-sm text-center mt-2">
+                Saldo insuficiente para realizar esta doação.
+              </p>
+            )}
           </CardContent>
         </Card>
         <DialogFooter>
           <DialogClose asChild>
             <Button variant="outline">Cancelar</Button>
           </DialogClose>
-          <Button onClick={handleConfirmDonation}>Confirmar</Button>
+          <Button onClick={handleConfirmDonation} disabled={isBalanceInsufficient}>Confirmar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

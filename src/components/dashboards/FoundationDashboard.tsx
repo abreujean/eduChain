@@ -200,7 +200,7 @@ export function FoundationDashboard({ isWalletConnected, walletPublicKey }: Foun
 
        {/* Donation Dashboard */}
       <div className="mt-6">
-        <DonationDashboard schools={approvedSchools} />
+        <DonationDashboard schools={approvedSchools} walletBalance={balance} />
       </div>
 
 

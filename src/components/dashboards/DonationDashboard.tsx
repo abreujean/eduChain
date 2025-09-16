@@ -6,12 +6,18 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface DonationDashboardProps {
   schools: School[];
+  walletBalance: string;
 }
 
-const DonationDashboard: React.FC<DonationDashboardProps> = ({ schools }) => {
+const DonationDashboard: React.FC<DonationDashboardProps> = ({ schools, walletBalance }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { state } = useAuth();
   const walletAddress = state.walletPublicKey;
+
+  const handleConfirmDonation = (donations: { schoolId: string; amount: number }[]) => {
+    // TODO: Implement donation logic
+    console.log('Donations to be confirmed:', donations);
+  };
 
   return (
     <div className="bg-card p-6 rounded-lg shadow-md">
@@ -25,12 +31,16 @@ const DonationDashboard: React.FC<DonationDashboardProps> = ({ schools }) => {
         <Button onClick={() => setIsModalOpen(true)}>Doar para Escolas</Button>
       </div>
 
-      <DonationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        schools={schools}
-        walletAddress={walletAddress || ''}
-      />
+      <div className="p-6">
+        <DonationModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          schools={schools}
+          onConfirm={handleConfirmDonation}
+          walletBalance={walletBalance}
+          walletAddress={walletAddress}
+        />
+      </div>
     </div>
   );
 };

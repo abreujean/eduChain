@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // Importe o hook
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +14,7 @@ import { FiatWithXLM } from '@/components/common/FiatWithXLM';
 import { DollarSign, Send, CheckCircle, Clock, XCircle, Eye, Plus } from 'lucide-react';
 
 export default function DistributionsPage() {
+  const { t } = useTranslation(); // Inicialize o hook
   const navigate = useNavigate();
   const [selectedSchool, setSelectedSchool] = useState('');
   const [amount, setAmount] = useState('');
@@ -140,9 +142,9 @@ export default function DistributionsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Distribuições de Recursos</h1>
+          <h1 className="text-3xl font-bold">{t('distributions_title')}</h1>
           <p className="text-muted-foreground">
-            Gerencie e execute distribuições para as escolas da rede
+            {t('distributions_subtitle')}
           </p>
         </div>
         
@@ -150,23 +152,23 @@ export default function DistributionsPage() {
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
-              Nova Distribuição
+              {t('distributions_new_distribution_button')}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Executar Distribuição</DialogTitle>
+              <DialogTitle>{t('distributions_execute_distribution_title')}</DialogTitle>
               <DialogDescription>
-                Envie recursos para uma escola da rede EduChain
+                {t('distributions_execute_distribution_description')}
               </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-4">
               <div>
-                <Label htmlFor="school">Escola Destinatária</Label>
+                <Label htmlFor="school">{t('distributions_recipient_school_label')}</Label>
                 <Select value={selectedSchool} onValueChange={setSelectedSchool}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione uma escola" />
+                    <SelectValue placeholder={t('distributions_select_school_placeholder')} />
                   </SelectTrigger>
                   <SelectContent>
                     {availableSchools.map((school) => (
@@ -179,7 +181,7 @@ export default function DistributionsPage() {
               </div>
               
               <div>
-                <Label htmlFor="amount">Valor (R$)</Label>
+                <Label htmlFor="amount">{t('distributions_amount_label')}</Label>
                 <Input
                   id="amount"
                   type="number"
@@ -190,24 +192,24 @@ export default function DistributionsPage() {
               </div>
               
               <div>
-                <Label htmlFor="purpose">Finalidade</Label>
+                <Label htmlFor="purpose">{t('distributions_purpose_label')}</Label>
                 <Select value={purpose} onValueChange={setPurpose}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione a finalidade" />
+                    <SelectValue placeholder={t('distributions_select_purpose_placeholder')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="alimentacao">Alimentação Escolar</SelectItem>
-                    <SelectItem value="capacitacao">Capacitação de Professores</SelectItem>
-                    <SelectItem value="infraestrutura">Infraestrutura</SelectItem>
+                    <SelectItem value="alimentacao">{t('distributions_purpose_food')}</SelectItem>
+                    <SelectItem value="capacitacao">{t('distributions_purpose_training')}</SelectItem>
+                    <SelectItem value="infraestrutura">{t('distributions_purpose_infrastructure')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               
               <div>
-                <Label htmlFor="notes">Observações</Label>
+                <Label htmlFor="notes">{t('distributions_notes_label')}</Label>
                 <Textarea
                   id="notes"
-                  placeholder="Adicione observações sobre esta distribuição..."
+                  placeholder={t('distributions_notes_placeholder')}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                 />
@@ -220,7 +222,7 @@ export default function DistributionsPage() {
                 disabled={!selectedSchool || !amount || !purpose}
               >
                 <Send className="h-4 w-4 mr-2" />
-                Executar Distribuição
+                {t('distributions_execute_distribution_button')}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -231,36 +233,36 @@ export default function DistributionsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Distribuído</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('distributions_total_distributed_card_title')}</CardTitle>
             <DollarSign className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
             <FiatWithXLM amountBRL={totalDistributed} className="text-success" />
-            <p className="text-xs text-muted-foreground">Este mês</p>
+            <p className="text-xs text-muted-foreground">{t('distributions_this_month')}</p>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pendentes</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('distributions_pending_card_title')}</CardTitle>
             <Clock className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
             <FiatWithXLM amountBRL={pendingAmount} className="text-warning" />
-            <p className="text-xs text-muted-foreground">Aguardando processamento</p>
+            <p className="text-xs text-muted-foreground">{t('distributions_pending_card_subtitle')}</p>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Escolas Atendidas</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('distributions_schools_served_card_title')}</CardTitle>
             <CheckCircle className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-primary">
               {new Set(distributions.filter(d => d.status === 'completed').map(d => d.schoolName)).size}
             </div>
-            <p className="text-xs text-muted-foreground">Este mês</p>
+            <p className="text-xs text-muted-foreground">{t('distributions_this_month')}</p>
           </CardContent>
         </Card>
       </div>
@@ -268,9 +270,9 @@ export default function DistributionsPage() {
       {/* Distributions Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Histórico de Distribuições</CardTitle>
+          <CardTitle>{t('distributions_history_table_title')}</CardTitle>
           <CardDescription>
-            Visualize todas as distribuições realizadas e seu status
+            {t('distributions_history_table_subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -278,13 +280,13 @@ export default function DistributionsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Escola</TableHead>
-                  <TableHead>Valor</TableHead>
-                  <TableHead>Finalidade</TableHead>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Score</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Ações</TableHead>
+                  <TableHead>{t('table_header_school')}</TableHead>
+                  <TableHead>{t('table_header_amount')}</TableHead>
+                  <TableHead>{t('table_header_purpose')}</TableHead>
+                  <TableHead>{t('table_header_date')}</TableHead>
+                  <TableHead>{t('table_header_score')}</TableHead>
+                  <TableHead>{t('table_header_status')}</TableHead>
+                  <TableHead>{t('table_header_actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -322,7 +324,7 @@ export default function DistributionsPage() {
                         onClick={() => navigate(`/schools/${distribution.schoolId}`)}
                       >
                         <Eye className="h-3 w-3 mr-1" />
-                        Ver
+                        {t('view_button')}
                       </Button>
                     </TableCell>
                   </TableRow>

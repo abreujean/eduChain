@@ -155,7 +155,7 @@ export function FoundationDashboard({ isWalletConnected, walletPublicKey }: Foun
               ) : balance !== null && balanceInBRL !== null ? (
                 <>
                   <FiatWithXLM amountBRL={balanceInBRL} className="text-success" />
-                  <p className="text-xs text-muted-foreground">{t('current_wallet_balance')} {balance} XLM</p>
+                  <p className="text-xs text-muted-foreground">{t('current_wallet_balance')} XLM</p>
                 </>
               ) : (
                 <p className="text-sm text-muted-foreground">{t('loading_balance')}</p> // Exibe enquanto busca o saldo

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search, Filter, Plus, MapPin, Users, Star } from 'lucide-react';
 
 export default function SchoolsPage() {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
@@ -83,19 +85,19 @@ export default function SchoolsPage() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'approved': return <Badge variant="default">Aprovada</Badge>;
-      case 'pending': return <Badge variant="secondary">Pendente</Badge>;
-      case 'suspended': return <Badge variant="destructive">Suspensa</Badge>;
-      default: return <Badge variant="outline">Indefinido</Badge>;
+      case 'approved': return <Badge variant="default">{t('status_approved')}</Badge>;
+      case 'pending': return <Badge variant="secondary">{t('status_pending')}</Badge>;
+      case 'suspended': return <Badge variant="destructive">{t('status_suspended')}</Badge>;
+      default: return <Badge variant="outline">{t('status_undefined')}</Badge>;
     }
   };
 
   const getCommunityTypeBadge = (type: string) => {
     switch (type) {
-      case 'quilombola': return <Badge variant="outline" className="text-purple-600 border-purple-600">Quilombola</Badge>;
-      case 'indigena': return <Badge variant="outline" className="text-orange-600 border-orange-600">Indígena</Badge>;
-      case 'comunitaria': return <Badge variant="outline" className="text-blue-600 border-blue-600">Comunitária</Badge>;
-      default: return <Badge variant="outline">Indefinido</Badge>;
+      case 'quilombola': return <Badge variant="outline" className="text-purple-600 border-purple-600">{t('community_quilombola')}</Badge>;
+      case 'indigena': return <Badge variant="outline" className="text-orange-600 border-orange-600">{t('community_indigena')}</Badge>;
+      case 'comunitaria': return <Badge variant="outline" className="text-blue-600 border-blue-600">{t('community_comunitaria')}</Badge>;
+      default: return <Badge variant="outline">{t('status_undefined')}</Badge>;
     }
   };
 
@@ -103,14 +105,14 @@ export default function SchoolsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Escolas Cadastradas</h1>
+          <h1 className="text-3xl font-bold">{t('registered_schools')}</h1>
           <p className="text-muted-foreground">
-            Gerencie todas as escolas e creches da rede EduChain
+            {t('manage_all_schools_and_daycare_centers')}
           </p>
         </div>
         <Button>
           <Plus className="h-4 w-4 mr-2" />
-          Nova Escola
+          {t('new_school')}
         </Button>
       </div>
 
@@ -119,7 +121,7 @@ export default function SchoolsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Filter className="h-5 w-5" />
-            Filtros
+            {t('filters')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -128,7 +130,7 @@ export default function SchoolsPage() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Buscar por nome, cidade ou gestor..."
+                  placeholder={t('search_by_name_city_or_manager')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -137,23 +139,23 @@ export default function SchoolsPage() {
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder={t('status')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos os status</SelectItem>
-                <SelectItem value="approved">Aprovadas</SelectItem>
-                <SelectItem value="pending">Pendentes</SelectItem>
-                <SelectItem value="suspended">Suspensas</SelectItem>
+                <SelectItem value="all">{t('all_statuses')}</SelectItem>
+                <SelectItem value="approved">{t('status_approved_plural')}</SelectItem>
+                <SelectItem value="pending">{t('status_pending_plural')}</SelectItem>
+                <SelectItem value="suspended">{t('status_suspended_plural')}</SelectItem>
               </SelectContent>
             </Select>
             <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Tipo" />
+                <SelectValue placeholder={t('type')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos os tipos</SelectItem>
-                <SelectItem value="escola">Escolas</SelectItem>
-                <SelectItem value="creche">Creches</SelectItem>
+                <SelectItem value="all">{t('all_types')}</SelectItem>
+                <SelectItem value="escola">{t('schools')}</SelectItem>
+                <SelectItem value="creche">{t('daycare_centers')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -163,9 +165,9 @@ export default function SchoolsPage() {
       {/* Schools Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Lista de Escolas ({filteredSchools.length})</CardTitle>
+          <CardTitle>{t('schools_list')} ({filteredSchools.length})</CardTitle>
           <CardDescription>
-            Visualize e gerencie todas as instituições cadastradas
+            {t('view_and_manage_all_registered_institutions')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -173,14 +175,14 @@ export default function SchoolsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Comunidade</TableHead>
-                  <TableHead>Localização</TableHead>
-                  <TableHead>Estudantes</TableHead>
-                  <TableHead>Score</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Ações</TableHead>
+                  <TableHead>{t('name')}</TableHead>
+                  <TableHead>{t('type')}</TableHead>
+                  <TableHead>{t('community')}</TableHead>
+                  <TableHead>{t('location')}</TableHead>
+                  <TableHead>{t('students')}</TableHead>
+                  <TableHead>{t('score')}</TableHead>
+                  <TableHead>{t('status')}</TableHead>
+                  <TableHead>{t('actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -194,7 +196,7 @@ export default function SchoolsPage() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">
-                        {school.type === 'escola' ? 'Escola' : 'Creche'}
+                        {school.type === 'escola' ? t('school') : t('daycare_center')}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -224,10 +226,10 @@ export default function SchoolsPage() {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Button variant="outline" size="sm">
-                          Ver
+                          {t('view')}
                         </Button>
                         <Button variant="outline" size="sm">
-                          Editar
+                          {t('edit')}
                         </Button>
                       </div>
                     </TableCell>

@@ -3,6 +3,12 @@ import { Button } from '@/components/ui/button';
 import DonationModal from './DonationModal';
 import { School } from '@/types/school';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface DonationDashboardProps {
   schools: School[];
@@ -28,7 +34,25 @@ const DonationDashboard: React.FC<DonationDashboardProps> = ({ schools, walletBa
             A sua contribuição ajuda a financiar escolas e transformar vidas.
           </p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)}>Doar para Escolas</Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="relative">
+                <Button
+                  onClick={() => setIsModalOpen(true)}
+                  disabled={!walletAddress}
+                  className="cursor-pointer"
+                >
+                  Doar para Escolas
+                </Button>
+                {!walletAddress && <div className="absolute inset-0" />} 
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Conecte sua carteira para doar</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       <div className="p-6">

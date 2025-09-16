@@ -1,157 +1,173 @@
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { User, AuthState, LoginCredentials, RegisterData } from '@/types/auth';
+import React, { createContext, useReducer, useContext, ReactNode } from 'react';
+import { requestAccess } from "@stellar/freighter-api";
+import { User } from '../types/auth';
 
-interface AuthContextType {
+// Define the shape of the authentication state
+interface AuthState {
+  isAuthenticated: boolean;
+  isWalletConnected: boolean;
+  user: User | null;
+  walletPublicKey: string | null;
+  loading: boolean;
+  error: string | null;
+}
+
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+// Define the actions that can be dispatched
+type AuthAction = 
+  | { type: 'LOGIN_START' }
+  | { type: 'LOGIN_SUCCESS'; payload: { user: User } }
+  | { type: 'LOGIN_FAILURE'; payload: string }
+  | { type: 'LOGOUT' }
+  | { type: 'REGISTER_START' }
+  | { type: 'REGISTER_SUCCESS'; payload: User }
+  | { type: 'REGISTER_FAILURE'; payload: string }
+  | { type: 'WALLET_CONNECT_START' }
+  | { type: 'WALLET_CONNECT_SUCCESS'; payload: string }
+  | { type: 'WALLET_CONNECT_FAILURE'; payload: string }
+  | { type: 'WALLET_DISCONNECT' };
+
+// Initial state for the authentication context
+const initialState: AuthState = {
+  isAuthenticated: false,
+  isWalletConnected: false,
+  user: null,
+  walletPublicKey: null,
+  loading: false,
+  error: null,
+};
+
+// Create the authentication context
+const AuthContext = createContext<{
   state: AuthState;
+  dispatch: React.Dispatch<AuthAction>;
   login: (credentials: LoginCredentials) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
+  register: (pass: string) => Promise<void>;
   logout: () => void;
   connectWallet: () => Promise<void>;
   disconnectWallet: () => void;
-}
+}>({ 
+  state: initialState,
+  dispatch: () => null,
+  login: async () => {},
+  register: async () => {},
+  logout: () => {},
+  connectWallet: async () => {},
+  disconnectWallet: () => {},
+});
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-type AuthAction =
-  | { type: 'LOGIN_START' }
-  | { type: 'LOGIN_SUCCESS'; payload: User }
-  | { type: 'LOGIN_FAIL'; payload: string }
-  | { type: 'LOGOUT' }
-  | { type: 'CONNECT_WALLET'; payload: string }
-  | { type: 'DISCONNECT_WALLET' };
-
+// Reducer function to handle state changes based on actions
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
     case 'LOGIN_START':
+    case 'REGISTER_START':
       return { ...state, loading: true, error: null };
     case 'LOGIN_SUCCESS':
       return {
         ...state,
-        loading: false,
         isAuthenticated: true,
-        user: action.payload,
-        error: null,
-      };
-    case 'LOGIN_FAIL':
-      return {
-        ...state,
+        user: action.payload.user,
         loading: false,
-        isAuthenticated: false,
-        user: null,
-        error: action.payload,
-      };
-    case 'LOGOUT':
-      return {
-        ...state,
-        isAuthenticated: false,
-        user: null,
         error: null,
       };
-    case 'CONNECT_WALLET':
-      return {
-        ...state,
-        user: state.user ? { ...state.user, walletAddress: action.payload } : null,
+    case 'REGISTER_SUCCESS':
+        return {
+            ...state,
+            isAuthenticated: true,
+            user: action.payload,
+            loading: false,
+            error: null,
+        };
+    case 'LOGIN_FAILURE':
+    case 'REGISTER_FAILURE':
+      return { ...state, loading: false, error: action.payload };
+    case 'LOGOUT':
+      return { ...initialState };
+
+    case 'WALLET_CONNECT_START':
+      return { ...state, loading: true, error: null };
+    case 'WALLET_CONNECT_SUCCESS':
+      return { 
+        ...state, 
+        isAuthenticated: true,
+        isWalletConnected: true, 
+        walletPublicKey: action.payload, 
+        loading: false, 
+        error: null 
       };
-    case 'DISCONNECT_WALLET':
-      return {
-        ...state,
-        user: state.user ? { ...state.user, walletAddress: undefined } : null,
-      };
+    case 'WALLET_CONNECT_FAILURE':
+      return { ...state, isWalletConnected: false, error: action.payload, loading: false };
+    case 'WALLET_DISCONNECT':
+      return { ...state, isWalletConnected: false, walletPublicKey: null };
     default:
       return state;
   }
 };
 
-const initialState: AuthState = {
-  user: null,
-  isAuthenticated: false,
-  loading: false,
-  error: null,
-};
-
-export function AuthProvider({ children }: { children: ReactNode }) {
+// Provider component to wrap the application and provide auth context
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  const login = async (credentials: LoginCredentials) => {
-    dispatch({ type: 'LOGIN_START' });
-    
-    try {
-      // Mock authentication - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock user data based on email
-      const mockUser: User = {
-        id: '1',
-        name: credentials.email === 'fundacao@educhain.org' ? 'Ana Silva' : 'Carlos Santos',
-        email: credentials.email,
-        role: credentials.email === 'fundacao@educhain.org' ? 'foundation_manager' : 'school_manager',
-        permissions: credentials.email === 'fundacao@educhain.org' 
-          ? ['manage_schools', 'approve_distributions', 'view_analytics'] 
-          : ['manage_school', 'submit_metrics', 'view_distributions'],
-        schoolId: credentials.email !== 'fundacao@educhain.org' ? 'school-1' : undefined,
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${credentials.email}`,
-      };
-      
-      dispatch({ type: 'LOGIN_SUCCESS', payload: mockUser });
-    } catch (error) {
-      dispatch({ type: 'LOGIN_FAIL', payload: 'Credenciais inválidas' });
-    }
-  };
-
-  const register = async (data: RegisterData) => {
-    dispatch({ type: 'LOGIN_START' });
-    
-    try {
-      // Mock registration - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const mockUser: User = {
-        id: Date.now().toString(),
-        name: data.name,
-        email: data.email,
-        role: data.role,
-        permissions: data.role === 'foundation_manager' 
-          ? ['manage_schools', 'approve_distributions', 'view_analytics'] 
-          : ['manage_school', 'submit_metrics', 'view_distributions'],
-        schoolId: data.schoolId,
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.email}`,
-      };
-      
-      dispatch({ type: 'LOGIN_SUCCESS', payload: mockUser });
-    } catch (error) {
-      dispatch({ type: 'LOGIN_FAIL', payload: 'Erro ao criar conta' });
-    }
-  };
-
-  const logout = () => {
-    dispatch({ type: 'LOGOUT' });
-  };
-
   const connectWallet = async () => {
+    dispatch({ type: 'WALLET_CONNECT_START' });
     try {
-      // Mock wallet connection - replace with actual Stellar/Freighter integration
-      const mockAddress = 'GDRXE2BQUC3AZNPVFSCEZ76NJ3WWL25FYFK6RGZGIEKWE4SOOHSUJUJ6';
-      dispatch({ type: 'CONNECT_WALLET', payload: mockAddress });
+      const publicKey = await requestAccess();
+      if (publicKey) {
+        dispatch({ type: 'WALLET_CONNECT_SUCCESS', payload: publicKey });
+      } else {
+        throw new Error('Freighter wallet is not connected or installed.');
+      }
     } catch (error) {
-      console.error('Failed to connect wallet:', error);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      dispatch({ type: 'WALLET_CONNECT_FAILURE', payload: `Falha ao conectar a carteira Freighter: ${errorMessage}` });
+      console.error(error);
     }
   };
 
   const disconnectWallet = () => {
-    dispatch({ type: 'DISCONNECT_WALLET' });
+    dispatch({ type: 'WALLET_DISCONNECT' });
+  };
+
+  // Mock login function
+  const login = async (credentials: LoginCredentials) => {
+    dispatch({ type: 'LOGIN_START' });
+    // Simulate API call
+    setTimeout(() => {
+      if (credentials.email === 'fundacao@educhain.org' && credentials.password === 'demo123') {
+        dispatch({ type: 'LOGIN_SUCCESS', payload: { user: { id: '1', name: 'Foundation Manager', role: 'foundation_manager' } } });
+      } else if (credentials.email === 'escola@educhain.org' && credentials.password === 'demo123') {
+        dispatch({ type: 'LOGIN_SUCCESS', payload: { user: { id: '2', name: 'School Manager', role: 'school_manager' } } });
+      } else {
+        dispatch({ type: 'LOGIN_FAILURE', payload: 'Invalid credentials' });
+      }
+    }, 1000);
+  };
+
+  const register = async (pass: string) => {
+    console.log(pass)
+    dispatch({ type: 'REGISTER_START' });
+    // Simulate API call
+    setTimeout(() => {
+      const newUser = { id: '3', name: 'New User', role: 'school_manager' };
+      dispatch({ type: 'REGISTER_SUCCESS', payload: newUser });
+    }, 1000);
+  };
+
+  // Logout function
+  const logout = () => {
+    dispatch({ type: 'LOGOUT' });
   };
 
   return (
-    <AuthContext.Provider value={{ state, login, register, logout, connectWallet, disconnectWallet }}>
+    <AuthContext.Provider value={{ state, dispatch, login, register, logout, connectWallet, disconnectWallet }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-}
+// Custom hook to use the auth context
+export const useAuth = () => useContext(AuthContext);

@@ -17,17 +17,19 @@ import { Bell, Wallet, LogOut, Settings, User } from 'lucide-react';
 export function Header() {
   const { state, logout, connectWallet, disconnectWallet } = useAuth();
 
+    console.log('Wallet Public Key:', state.walletPublicKey);
+
+
   if (!state.user) return null;
 
   const getInitials = (name: string) => {
+    if (!name) return '';
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
   const getRoleLabel = (role: string) => {
     return role === 'foundation_manager' ? 'Gestão Fundação' : 'Gestão Escolar';
   };
-
-  const isWalletConnected = !!state.user.walletAddress;
 
   return (
     <header className="h-16 border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -46,14 +48,16 @@ export function Header() {
 
         <div className="flex items-center gap-4">
           {/* Wallet Connection */}
-          <Button
-            variant={isWalletConnected ? "secondary" : "outline"}
+<Button
+            variant={state.isWalletConnected ? "secondary" : "outline"}
             size="sm"
-            onClick={connectWallet}
+            onClick={!state.isWalletConnected ? connectWallet : undefined}
             className="hidden sm:flex"
           >
             <Wallet className="h-4 w-4 mr-2" />
-            {isWalletConnected ? 'Conectada' : 'Conectar Carteira'}
+            {state.isWalletConnected && state.walletPublicKey && typeof state.walletPublicKey.address === 'string'
+              ? `${state.walletPublicKey.address.substring(0, 4)}...${state.walletPublicKey.address.substring(state.walletPublicKey.address.length - 4)}`
+              : 'Conectar Carteira'}
           </Button>
 
           {/* Notifications */}
@@ -72,7 +76,7 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                 <Avatar className="h-10 w-10">
-                  <AvatarImage src={state.user.avatar} alt={state.user.name} />
+                  {/*<AvatarImage src={state.user.avatar} alt={state.user.name} />*/}
                   <AvatarFallback className="bg-gradient-primary text-primary-foreground">
                     {getInitials(state.user.name)}
                   </AvatarFallback>
@@ -84,9 +88,9 @@ export function Header() {
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-2">
                   <p className="text-sm font-medium leading-none">{state.user.name}</p>
-                  <p className="text-xs leading-none text-muted-foreground">
+                  {/*<p className="text-xs leading-none text-muted-foreground">
                     {state.user.email}
-                  </p>
+                  </p>*/}
                   <Badge variant="secondary" className="w-fit">
                     {getRoleLabel(state.user.role)}
                   </Badge>
@@ -105,7 +109,7 @@ export function Header() {
                 <span>Configurações</span>
               </DropdownMenuItem>
               
-              {!isWalletConnected ? (
+              {!state.isWalletConnected ? (
                 <DropdownMenuItem onClick={connectWallet} className="cursor-pointer">
                   <Wallet className="mr-2 h-4 w-4" />
                   <span>Conectar Carteira</span>

@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, GraduationCap, Heart, Users } from 'lucide-react';
+import heroImage from '@/assets/hero-education.jpg';
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -50,7 +51,7 @@ const LoginPage = () => {
             {/* Hero Image */}
             <div className="rounded-xl overflow-hidden shadow-glow mb-6">
               <img 
-                src="https://images.unsplash.com/photo-1544717824-d4bb8e24d5dc?q=80&w=1469&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                src={heroImage}
                 alt={t('hero_image_alt')}
                 className="w-full h-48 object-cover"
               />

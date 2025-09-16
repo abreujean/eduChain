@@ -62,6 +62,7 @@ const AuthContext = createContext<{
 
 // Reducer function to handle state changes based on actions
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
+  console.log('AuthReducer Action:', action.type, 'Payload:', 'payload' in action ? action.payload : 'No payload');
   switch (action.type) {
     case 'LOGIN_START':
     case 'REGISTER_START':
@@ -91,6 +92,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
     case 'WALLET_CONNECT_START':
       return { ...state, loading: true, error: null };
     case 'WALLET_CONNECT_SUCCESS':
+      console.log('Reducer: Wallet connect success, public key:', action.payload);
       return { 
         ...state, 
         isAuthenticated: true,
@@ -117,7 +119,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const publicKey = await requestAccess();
       if (publicKey) {
-        dispatch({ type: 'WALLET_CONNECT_SUCCESS', payload: publicKey });
+        // @ts-ignore
+        dispatch({ type: 'WALLET_CONNECT_SUCCESS', payload: publicKey.address || publicKey });
       } else {
         throw new Error('Freighter wallet is not connected or installed.');
       }

@@ -1,18 +1,27 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { FoundationDashboard } from '@/components/dashboards/FoundationDashboard';
-import { SchoolDashboard } from '@/components/dashboards/SchoolDashboard';
+import { FoundationDashboard } from './dashboards/FoundationDashboard';
+import { SchoolDashboard } from './dashboards/SchoolDashboard';
 
-export function Dashboard() {
+const Dashboard = () => {
   const { state } = useAuth();
+  const { user, isWalletConnected, walletPublicKey } = state;
 
-  if (!state.user) {
+  console.log('Dashboard -> isWalletConnected:', isWalletConnected);
+  console.log('Dashboard -> walletPublicKey:', walletPublicKey);
+
+  if (!user) {
     return null;
   }
 
   return state.user.role === 'foundation_manager' ? (
-    <FoundationDashboard />
+    <FoundationDashboard 
+      isWalletConnected={isWalletConnected} 
+      walletPublicKey={walletPublicKey} 
+    />
   ) : (
     <SchoolDashboard />
   );
 }
+
+export default Dashboard;

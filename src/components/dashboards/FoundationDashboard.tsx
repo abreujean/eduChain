@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import useStellarBalance from '@/hooks/useStellarBalance';
 import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -21,8 +22,19 @@ import {
 import { ApprovedSchoolsList } from './ApprovedSchoolsList';
 import DonationDashboard from './DonationDashboard';
 
-export function FoundationDashboard() {
+interface FoundationDashboardProps {
+  isWalletConnected: boolean;
+  walletPublicKey: string | null;
+}
+
+export function FoundationDashboard({ isWalletConnected, walletPublicKey }: FoundationDashboardProps) {
   const navigate = useNavigate();
+  const { balance, loading, error } = useStellarBalance(walletPublicKey);
+
+  useEffect(() => {
+    console.log('FoundationDashboard isWalletConnected:', isWalletConnected);
+    console.log('Dashboard - walletPublicKey:', walletPublicKey);
+  }, [isWalletConnected, walletPublicKey]);
 
   // Mock data for approved schools, simulating an API call
   const approvedSchools = [
@@ -38,7 +50,7 @@ export function FoundationDashboard() {
       responsible: 'Maria Silva',
       // Adicionando os campos que faltam
       installmentsPaid: 10,
-      lastPaymentDate: new Date('2024-07-15'),
+      lastPaymentDate: new Date('2025-07-15'),
       location: 'São Paulo, Brasil',
       communityType: 'Urbana',
       students: 300
@@ -124,8 +136,22 @@ export function FoundationDashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <FiatWithXLM amountBRL={mockData.totalFunds} className="text-success" />
-            <p className="text-xs text-muted-foreground">+12% vs. mês anterior</p>
+            {isWalletConnected ? (
+              loading ? (
+                <p className="text-sm text-muted-foreground">Carregando saldo...</p>
+              ) : error ? (
+                <p className="text-sm text-destructive">{error}</p>
+              ) : balance !== null ? (
+                <>
+                  <span className="text-2xl font-bold text-success">{balance} XLM</span>
+                  <p className="text-xs text-muted-foreground">Saldo atual da carteira</p>
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground">Carregando saldo...</p> // Exibe enquanto busca o saldo
+              )
+            ) : (
+              <p className="text-sm text-muted-foreground">Carteira não conectada</p>
+            )}
           </CardContent>
         </Card>
 

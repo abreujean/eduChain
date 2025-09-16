@@ -24,6 +24,23 @@ import {
 import { ApprovedSchoolsList } from './ApprovedSchoolsList';
 import DonationDashboard from './DonationDashboard';
 
+interface School {
+  id: string;
+  name: string;
+  state: string;
+  city: string;
+  donationInstallmentValue: number;
+  walletAddress: string;
+  lastMetric: string;
+  nextDistribution: string;
+  responsible: string;
+  installmentsPaid: number;
+  lastPaymentDate: Date;
+  location: string;
+  communityType: string;
+  students: number;
+}
+
 interface FoundationDashboardProps {
   isWalletConnected: boolean;
   walletPublicKey: string | null;
@@ -35,6 +52,7 @@ export function FoundationDashboard({ isWalletConnected, walletPublicKey }: Foun
   const { balance, loading, error } = useStellarBalance(walletPublicKey);
   const { data: xlmPrice, isLoading: isXlmPriceLoading } = useXLMPrice();
   const [balanceInBRL, setBalanceInBRL] = useState<number | null>(null);
+  const [approvedSchools, setApprovedSchools] = useState<School[]>([]);
 
   useEffect(() => {
     if (balance && xlmPrice) {
@@ -47,7 +65,43 @@ export function FoundationDashboard({ isWalletConnected, walletPublicKey }: Foun
     console.log('Dashboard - walletPublicKey:', walletPublicKey);
   }, [isWalletConnected, walletPublicKey]);
 
+  useEffect(() => {
+    const fetchApprovedSchools = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/institutions');
+        if (!response.ok) {
+          throw new Error('Failed to fetch approved schools');
+        }
+        const data = await response.json();
+        // Mapeie os dados da API para o formato esperado pelo componente
+        const formattedSchools = data.map((school: any) => ({
+          id: school.id,
+          name: school.name,
+          state: school.state,
+          city: school.city,
+          donationInstallmentValue: school.installment_value,
+          walletAddress: school.stellar_wallet,
+          lastMetric: new Date().toISOString().split('T')[0], // Placeholder
+          nextDistribution: new Date().toISOString().split('T')[0], // Placeholder
+          responsible: school.manager_id || 'N/A', // Placeholder
+          installmentsPaid: 0, // Placeholder
+          lastPaymentDate: new Date(), // Placeholder
+          location: `${school.city}, ${school.state}`,
+          communityType: school.type, 
+          students: school.student_count,
+        }));
+        setApprovedSchools(formattedSchools);
+      } catch (error) {
+        console.error('Error fetching approved schools:', error);
+        // Você pode definir um estado de erro aqui para exibir uma mensagem na UI
+      }
+    };
+
+    fetchApprovedSchools();
+  }, []);
+
   // Mock data for approved schools, simulating an API call
+  /*
   const approvedSchools = [
     {
       id: '1',
@@ -101,6 +155,7 @@ export function FoundationDashboard({ isWalletConnected, walletPublicKey }: Foun
       students: 450
     },
   ];
+  */
 
   // Mock data
   const mockData = {

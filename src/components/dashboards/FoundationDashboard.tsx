@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import useStellarBalance from '@/hooks/useStellarBalance';
+import { useXLMPrice } from '@/hooks/useXLMPrice';
 import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -30,6 +31,14 @@ interface FoundationDashboardProps {
 export function FoundationDashboard({ isWalletConnected, walletPublicKey }: FoundationDashboardProps) {
   const navigate = useNavigate();
   const { balance, loading, error } = useStellarBalance(walletPublicKey);
+  const { data: xlmPrice, isLoading: isXlmPriceLoading } = useXLMPrice();
+  const [balanceInBRL, setBalanceInBRL] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (balance && xlmPrice) {
+      setBalanceInBRL(parseFloat(balance) * xlmPrice);
+    }
+  }, [balance, xlmPrice]);
 
   useEffect(() => {
     console.log('FoundationDashboard isWalletConnected:', isWalletConnected);
@@ -137,14 +146,14 @@ export function FoundationDashboard({ isWalletConnected, walletPublicKey }: Foun
           </CardHeader>
           <CardContent>
             {isWalletConnected ? (
-              loading ? (
+              loading || isXlmPriceLoading ? (
                 <p className="text-sm text-muted-foreground">Carregando saldo...</p>
               ) : error ? (
                 <p className="text-sm text-destructive">{error}</p>
-              ) : balance !== null ? (
+              ) : balance !== null && balanceInBRL !== null ? (
                 <>
-                  <span className="text-2xl font-bold text-success">{balance} XLM</span>
-                  <p className="text-xs text-muted-foreground">Saldo atual da carteira</p>
+                  <FiatWithXLM amountBRL={balanceInBRL} className="text-success" />
+                  <p className="text-xs text-muted-foreground">Saldo atual da carteira {balance} XLM</p>
                 </>
               ) : (
                 <p className="text-sm text-muted-foreground">Carregando saldo...</p> // Exibe enquanto busca o saldo

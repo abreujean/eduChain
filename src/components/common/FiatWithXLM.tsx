@@ -20,7 +20,10 @@ export function FiatWithXLM({ amountBRL, className }: FiatWithXLMProps) {
   };
 
   const formatXLM = (amount: number) => {
-    return amount.toFixed(4);
+    return new Intl.NumberFormat('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 4
+    }).format(amount);
   };
 
   if (isLoading) {

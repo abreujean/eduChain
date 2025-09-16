@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   Calendar
 } from 'lucide-react';
+import { ApprovedSchoolsList } from './ApprovedSchoolsList';
 
 export function FoundationDashboard() {
   const navigate = useNavigate();
@@ -104,6 +105,11 @@ export function FoundationDashboard() {
             <p className="text-xs text-muted-foreground">+15% frequência média</p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Approved Schools List */}
+      <div className="mt-6">
+        <ApprovedSchoolsList />
       </div>
 
       {/* Actions and Distributions */}

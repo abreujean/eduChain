@@ -23,6 +23,7 @@ import {
   TableRow,
 } from '@/components/ui/table'; // Ajuste o caminho se necessário
 import { School } from '@/types/school';
+import { useToast } from '@/hooks/use-toast';
 
 interface DonationModalProps {
   isOpen: boolean;
@@ -33,6 +34,7 @@ interface DonationModalProps {
 }
 
 const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose, schools, walletAddress, walletBalance }) => {
+  const { toast } = useToast();
   if (!isOpen) return null;
 
   const totalDonation = schools.reduce((acc, school) => acc + (school.donationInstallmentValue || 0), 0);
@@ -56,6 +58,7 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose, schools,
       })),
     };
     console.log('Dados da doação a serem enviados:', donationData);
+    toast({ title: 'Sucesso!', description: 'Sua doação foi confirmada.' });
     onClose(); // Fecha o modal após a confirmação
   };
 

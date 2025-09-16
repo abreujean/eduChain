@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, useContext, ReactNode } from 'react';
+import React, { createContext, useReducer, useContext, ReactNode, useEffect } from 'react';
 import { requestAccess } from "@stellar/freighter-api";
 import { User } from '../types/auth';
 
@@ -68,6 +68,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
     case 'REGISTER_START':
       return { ...state, loading: true, error: null };
     case 'LOGIN_SUCCESS':
+      localStorage.setItem('user', JSON.stringify(action.payload.user));
       return {
         ...state,
         isAuthenticated: true,
@@ -76,6 +77,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         error: null,
       };
     case 'REGISTER_SUCCESS':
+        localStorage.setItem('user', JSON.stringify(action.payload));
         return {
             ...state,
             isAuthenticated: true,
@@ -87,12 +89,15 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
     case 'REGISTER_FAILURE':
       return { ...state, loading: false, error: action.payload };
     case 'LOGOUT':
+      localStorage.removeItem('user');
+      localStorage.removeItem('walletPublicKey');
       return { ...initialState };
 
     case 'WALLET_CONNECT_START':
       return { ...state, loading: true, error: null };
     case 'WALLET_CONNECT_SUCCESS':
       console.log('Reducer: Wallet connect success, public key:', action.payload);
+      localStorage.setItem('walletPublicKey', action.payload);
       return { 
         ...state, 
         isAuthenticated: true,
@@ -104,6 +109,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
     case 'WALLET_CONNECT_FAILURE':
       return { ...state, isWalletConnected: false, error: action.payload, loading: false };
     case 'WALLET_DISCONNECT':
+      localStorage.removeItem('walletPublicKey');
       return { ...state, isWalletConnected: false, walletPublicKey: null };
     default:
       return state;
@@ -113,6 +119,18 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 // Provider component to wrap the application and provide auth context
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
+
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    const walletPublicKey = localStorage.getItem('walletPublicKey');
+
+    if (user) {
+      dispatch({ type: 'LOGIN_SUCCESS', payload: { user: JSON.parse(user) } });
+    } 
+    if (walletPublicKey) {
+      dispatch({ type: 'WALLET_CONNECT_SUCCESS', payload: walletPublicKey });
+    }
+  }, []);
 
   const connectWallet = async () => {
     dispatch({ type: 'WALLET_CONNECT_START' });

@@ -12,9 +12,23 @@ export class InstitutionsService {
   ) {}
 
   // Cria uma nova instituição
-  create(createInstitutionDto: CreateInstitutionDto) {
+  async create(createInstitutionDto: CreateInstitutionDto) {
+    const { student_count, school_days, unit_value } = createInstitutionDto;
+
+    // 1. Calcule os valores aqui na aplicação
+    const total_value = Number(student_count) * Number(school_days) * Number(unit_value);
+    const installment_value = total_value / 8; // Ou sua lógica de parcelamento
+
+    // 2. Adicione os valores calculados ao objeto antes de salvar
+    const dataToSave = {
+      ...createInstitutionDto,
+      total_value,
+      installment_value,
+    };
+
+    // 3. Salve o objeto completo no banco
     return this.prisma.institutions.create({
-      data: createInstitutionDto,
+      data: dataToSave,
     });
   }
 

@@ -3,101 +3,41 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { School, Wallet } from 'lucide-react';
+import { School as SchoolIcon, Wallet } from 'lucide-react';
+import { School } from '@/types/school';
 
-// Mock data para escolas - em um aplicativo real, isso viria de uma API
-const allSchools = [
-  {
-    id: 'school-1',
-    name: 'Escola Quilombola São José',
-    status: 'approved',
-    location: 'Bahia, Brasil',
-    students: 150,
-    communityType: 'Quilombola',
-    donationInstallmentValue: 500,
-    lastPaymentDate: new Date(new Date().setDate(new Date().getDate() - 15)), // 15 dias atrás
-    installmentsPaid: 5,
-    walletAddress: 'GABC...XYZ'
-  },
-  {
-    id: 'school-2',
-    name: 'Creche Indígena Tabajaras',
-    status: 'pending',
-    location: 'Paraíba, Brasil',
-    students: 80,
-    communityType: 'Indígena',
-    donationInstallmentValue: 300,
-    lastPaymentDate: new Date(new Date().setDate(new Date().getDate() - 45)), // 45 dias atrás
-    installmentsPaid: 2,
-    walletAddress: 'GDEF...UVW'
-  },
-  {
-    id: 'school-3',
-    name: 'Escola Comunitária Esperança',
-    status: 'approved',
-    location: 'São Paulo, Brasil',
-    students: 250,
-    communityType: 'Urbana',
-    donationInstallmentValue: 750,
-    lastPaymentDate: new Date(new Date().setDate(new Date().getDate() - 5)), // 5 dias atrás
-    installmentsPaid: 10,
-    walletAddress: 'GHIJ...RST'
-  },
-  {
-    id: 'school-4',
-    name: 'Escola Ribeirinha Solimões',
-    status: 'approved',
-    location: 'Amazonas, Brasil',
-    students: 120,
-    communityType: 'Ribeirinha',
-    donationInstallmentValue: 400,
-    lastPaymentDate: new Date(new Date().setDate(new Date().getDate() - 25)), // 25 dias atrás
-    installmentsPaid: 8,
-    walletAddress: 'GKLM...OPQ'
-  },
-    {
-    id: 'school-5',
-    name: 'Escola do Campo Verdejante',
-    status: 'rejected',
-    location: 'Minas Gerais, Brasil',
-    students: 95,
-    communityType: 'Rural',
-    donationInstallmentValue: 200,
-    lastPaymentDate: new Date(new Date().setDate(new Date().getDate() - 60)), // 60 dias atrás
-    installmentsPaid: 1,
-    walletAddress: 'GNOP...MNO'
-  }
-];
-
+// Funções de utilidade movidas para fora ou para um arquivo de utils
 const isEligible = (lastPaymentDate: Date) => {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  return lastPaymentDate > thirtyDaysAgo;
+  return new Date(lastPaymentDate) > thirtyDaysAgo;
 };
 
 const daysAgo = (date: Date) => {
   const now = new Date();
-  const differenceInTime = now.getTime() - date.getTime();
+  const differenceInTime = now.getTime() - new Date(date).getTime();
   const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
   if (differenceInDays === 0) return 'Hoje';
   if (differenceInDays === 1) return 'Há 1 dia';
   return `Há ${differenceInDays} dias`;
+};
+
+interface ApprovedSchoolsListProps {
+  schools: School[];
 }
 
-export function ApprovedSchoolsList() {
-  const approvedSchools = allSchools.filter(school => school.status === 'approved');
-
+export function ApprovedSchoolsList({ schools }: ApprovedSchoolsListProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <School className="h-5 w-5 text-primary" />
+          <SchoolIcon className="h-5 w-5 text-primary" />
           Escolas Aprovadas
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {approvedSchools.map((school) => (
+          {schools.map((school) => (
             <div key={school.id} className="flex items-start justify-between p-3 bg-secondary/20 rounded-lg">
               <div className="flex-1">
                 <Link 
@@ -111,7 +51,7 @@ export function ApprovedSchoolsList() {
                     <Badge variant="outline">{school.communityType}</Badge>
                     <span className="text-xs text-muted-foreground">{school.students} estudantes</span>
                 </div>
-<div className="mt-2 text-sm space-y-1">
+                <div className="mt-2 text-sm space-y-1">
                   <div className="flex items-center gap-2">
                      <Wallet className="h-4 w-4 text-muted-foreground" />
                      <span className="font-mono text-xs">{school.walletAddress}</span>

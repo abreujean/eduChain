@@ -19,9 +19,65 @@ import {
   Calendar
 } from 'lucide-react';
 import { ApprovedSchoolsList } from './ApprovedSchoolsList';
+import DonationDashboard from './DonationDashboard';
 
 export function FoundationDashboard() {
   const navigate = useNavigate();
+
+  // Mock data for approved schools, simulating an API call
+  const approvedSchools = [
+    {
+      id: '1',
+      name: 'Escola Municipal Fundamental Centro de Ensino',
+      state: 'São Paulo',
+      city: 'São Paulo',
+      donationInstallmentValue: 1000,
+      walletAddress: 'GABC...XYZ',
+      lastMetric: '2024-07-20',
+      nextDistribution: '2024-08-15',
+      responsible: 'Maria Silva',
+      // Adicionando os campos que faltam
+      installmentsPaid: 10,
+      lastPaymentDate: new Date('2024-07-15'),
+      location: 'São Paulo, Brasil',
+      communityType: 'Urbana',
+      students: 300
+    },
+    {
+      id: '2',
+      name: 'Escola Estadual de Ensino Médio Pasqualini',
+      state: 'Rio de Janeiro',
+      city: 'Rio de Janeiro',
+      donationInstallmentValue: 1500,
+      walletAddress: 'GDEF...UVW',
+      lastMetric: '2024-07-18',
+      nextDistribution: '2024-08-15',
+      responsible: 'João Costa',
+      // Adicionando os campos que faltam
+      installmentsPaid: 8,
+      lastPaymentDate: new Date('2024-07-20'),
+      location: 'Rio de Janeiro, Brasil',
+      communityType: 'Urbana',
+      students: 500
+    },
+    {
+      id: '3',
+      name: 'Colégio de Aplicação da Universidade Federal',
+      state: 'Minas Gerais',
+      city: 'Belo Horizonte',
+      donationInstallmentValue: 1200,
+      walletAddress: 'GHIJ...RST',
+      lastMetric: '2024-07-22',
+      nextDistribution: '2024-08-20',
+      responsible: 'Ana Souza',
+      // Adicionando os campos que faltam
+      installmentsPaid: 12,
+      lastPaymentDate: new Date('2024-07-25'),
+      location: 'Belo Horizonte, Brasil',
+      communityType: 'Urbana',
+      students: 450
+    },
+  ];
 
   // Mock data
   const mockData = {
@@ -107,9 +163,15 @@ export function FoundationDashboard() {
         </Card>
       </div>
 
+       {/* Donation Dashboard */}
+      <div className="mt-6">
+        <DonationDashboard schools={approvedSchools} />
+      </div>
+
+
       {/* Approved Schools List */}
       <div className="mt-6">
-        <ApprovedSchoolsList />
+        <ApprovedSchoolsList schools={approvedSchools} />
       </div>
 
       {/* Actions and Distributions */}

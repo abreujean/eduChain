@@ -1,27 +1,14 @@
 export interface School {
   id: string;
   name: string;
-  type: 'escola' | 'creche';
-  communityType: 'quilombola' | 'indigena' | 'comunitaria';
-  location: {
-    state: string;
-    city: string;
-    address: string;
-    coordinates: [number, number];
-  };
-  walletAddress?: string;
-  managerId: string;
-  eligibilityScore: number;
-  status: 'pending' | 'approved' | 'suspended';
-  studentsCount: number;
-  infrastructure: {
-    hasKitchen: boolean;
-    hasLibrary: boolean;
-    internetAccess: boolean;
-    safeWater: boolean;
-  };
-  createdAt: string;
-  updatedAt?: string;
+  status: 'approved' | 'pending' | 'rejected';
+  location: string;
+  students: number;
+  communityType: 'Quilombola' | 'Indígena' | 'Urbana' | 'Ribeirinha' | 'Rural';
+  donationInstallmentValue: number;
+  lastPaymentDate: Date;
+  installmentsPaid: number;
+  walletAddress: string;
 }
 
 export interface MonthlyMetrics {

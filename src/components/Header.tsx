@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next'; // Importe o hook
 import { useAuth } from '@/contexts/AuthContext';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
@@ -12,12 +13,17 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
-import { Bell, Wallet, LogOut, Settings, User } from 'lucide-react';
+import { Bell, Wallet, LogOut, Settings, User, Languages } from 'lucide-react'; // Adicione o ícone Languages
 
 export function Header() {
   const { state, logout, connectWallet, disconnectWallet } = useAuth();
+  const { t, i18n } = useTranslation(); // Inicialize o hook
 
-    console.log('Wallet Public Key:', state.walletPublicKey);
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
+
+  console.log('Wallet Public Key:', state.walletPublicKey);
 
 
   if (!state.user) return null;
@@ -28,7 +34,8 @@ export function Header() {
   };
 
   const getRoleLabel = (role: string) => {
-    return role === 'foundation_manager' ? 'Gestão Fundação' : 'Gestão Escolar';
+    // return role === 'foundation_manager' ? 'Gestão Fundação' : 'Gestão Escolar';
+    return role === 'foundation_manager' ? t('foundation_management') : t('school_management');
   };
 
   return (
@@ -38,17 +45,17 @@ export function Header() {
           <SidebarTrigger className="h-8 w-8" />
           <div className="hidden md:block">
             <h2 className="text-lg font-semibold text-foreground">
-              {state.user.role === 'foundation_manager' ? 'Painel da Fundação' : 'Painel da Escola'}
+              {state.user.role === 'foundation_manager' ? t('foundation_dashboard') : t('school_dashboard')}
             </h2>
             <p className="text-sm text-muted-foreground">
-              Bem-vindo(a), {state.user.name}
+              {t('welcome', { name: state.user.name })}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
           {/* Wallet Connection */}
-<Button
+          <Button
             variant={state.isWalletConnected ? "secondary" : "outline"}
             size="sm"
             onClick={!state.isWalletConnected ? connectWallet : undefined}
@@ -57,8 +64,21 @@ export function Header() {
             <Wallet className="h-4 w-4 mr-2" />
             {state.isWalletConnected && state.walletPublicKey && typeof state.walletPublicKey.address === 'string'
               ? `${state.walletPublicKey.address.substring(0, 4)}...${state.walletPublicKey.address.substring(state.walletPublicKey.address.length - 4)}`
-              : 'Conectar Carteira'}
+              : t('connect_wallet')}
           </Button>
+
+          {/* Language Selector */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Languages className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => changeLanguage('pt')}>{t('portuguese')}</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => changeLanguage('en')}>{t('english')}</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Notifications */}
           <Button variant="outline" size="sm" className="relative">
@@ -101,23 +121,23 @@ export function Header() {
               
               <DropdownMenuItem className="cursor-pointer">
                 <User className="mr-2 h-4 w-4" />
-                <span>Perfil</span>
+                <span>{t('profile')}</span>
               </DropdownMenuItem>
               
               <DropdownMenuItem className="cursor-pointer">
                 <Settings className="mr-2 h-4 w-4" />
-                <span>Configurações</span>
+                <span>{t('settings')}</span>
               </DropdownMenuItem>
               
               {!state.isWalletConnected ? (
                 <DropdownMenuItem onClick={connectWallet} className="cursor-pointer">
                   <Wallet className="mr-2 h-4 w-4" />
-                  <span>Conectar Carteira</span>
+                  <span>{t('connect_wallet')}</span>
                 </DropdownMenuItem>
               ) : (
                 <DropdownMenuItem onClick={disconnectWallet} className="cursor-pointer">
                   <Wallet className="mr-2 h-4 w-4" />
-                  <span>Desconectar Carteira</span>
+                  <span>{t('disconnect_wallet')}</span>
                 </DropdownMenuItem>
               )}
               
@@ -125,7 +145,7 @@ export function Header() {
               
               <DropdownMenuItem onClick={logout} className="cursor-pointer text-destructive">
                 <LogOut className="mr-2 h-4 w-4" />
-                <span>Sair</span>
+                <span>{t('logout')}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

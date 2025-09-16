@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import useStellarBalance from '@/hooks/useStellarBalance';
 import { useXLMPrice } from '@/hooks/useXLMPrice';
 import { useNavigate, Link } from 'react-router-dom';
@@ -29,6 +30,7 @@ interface FoundationDashboardProps {
 }
 
 export function FoundationDashboard({ isWalletConnected, walletPublicKey }: FoundationDashboardProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { balance, loading, error } = useStellarBalance(walletPublicKey);
   const { data: xlmPrice, isLoading: isXlmPriceLoading } = useXLMPrice();
@@ -141,59 +143,59 @@ export function FoundationDashboard({ isWalletConnected, walletPublicKey }: Foun
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Recursos</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('total_resources')}</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             {isWalletConnected ? (
               loading || isXlmPriceLoading ? (
-                <p className="text-sm text-muted-foreground">Carregando saldo...</p>
+                <p className="text-sm text-muted-foreground">{t('loading_balance')}</p>
               ) : error ? (
                 <p className="text-sm text-destructive">{error}</p>
               ) : balance !== null && balanceInBRL !== null ? (
                 <>
                   <FiatWithXLM amountBRL={balanceInBRL} className="text-success" />
-                  <p className="text-xs text-muted-foreground">Saldo atual da carteira {balance} XLM</p>
+                  <p className="text-xs text-muted-foreground">{t('current_wallet_balance')} {balance} XLM</p>
                 </>
               ) : (
-                <p className="text-sm text-muted-foreground">Carregando saldo...</p> // Exibe enquanto busca o saldo
+                <p className="text-sm text-muted-foreground">{t('loading_balance')}</p> // Exibe enquanto busca o saldo
               )
             ) : (
-              <p className="text-sm text-muted-foreground">Carteira não conectada</p>
+              <p className="text-sm text-muted-foreground">{t('wallet_not_connected')}</p>
             )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Distribuições Mensais</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('monthly_distributions')}</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <FiatWithXLM amountBRL={mockData.monthlyDistributions} className="text-primary" />
-            <p className="text-xs text-muted-foreground">Este mês</p>
+            <p className="text-xs text-muted-foreground">{t('this_month')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Escolas Ativas</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('active_schools')}</CardTitle>
             <School className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-secondary">{mockData.totalSchools}</div>
-            <p className="text-xs text-muted-foreground">+8 novas escolas</p>
+            <p className="text-xs text-muted-foreground">{t('new_schools')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Estudantes Ativos</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('active_students')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-accent">{mockData.activeStudents.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">+15% frequência média</p>
+            <p className="text-xs text-muted-foreground">{t('average_attendance')}</p>
           </CardContent>
         </Card>
       </div>
@@ -215,32 +217,32 @@ export function FoundationDashboard({ isWalletConnected, walletPublicKey }: Foun
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-warning" />
-              Ações Necessárias
+              {t('necessary_actions')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center gap-3 p-3 bg-warning/10 rounded-lg">
               <Badge className="bg-blue-600 text-white">5</Badge>
               <div className="flex-1">
-                <p className="text-sm font-medium">Escolas pendentes de aprovação</p>
+                <p className="text-sm font-medium">{t('schools_pending_approval')}</p>
               </div>
-              <Button variant="outline" size="sm" onClick={() => navigate('/approvals')}>Ver</Button>
+              <Button variant="outline" size="sm" onClick={() => navigate('/approvals')}>{t('view')}</Button>
             </div>
             
             <div className="flex items-center gap-3 p-3 bg-destructive/10 rounded-lg">
               <Badge className="bg-red-600 text-white">2</Badge>
               <div className="flex-1">
-                <p className="text-sm font-medium">Métricas em atraso</p>
+                <p className="text-sm font-medium">{t('overdue_metrics')}</p>
               </div>
-              <Button variant="outline" size="sm" onClick={() => navigate('/analytics')}>Ver</Button>
+              <Button variant="outline" size="sm" onClick={() => navigate('/analytics')}>{t('view')}</Button>
             </div>
             
             <div className="flex items-center gap-3 p-3 bg-success/10 rounded-lg">
               <Badge className="bg-green-600 text-white">8</Badge>
               <div className="flex-1">
-                <p className="text-sm font-medium">Distribuições aprovadas</p>
+                <p className="text-sm font-medium">{t('approved_distributions')}</p>
               </div>
-              <Button variant="outline" size="sm" onClick={() => navigate('/distributions')}>Ver</Button>
+              <Button variant="outline" size="sm" onClick={() => navigate('/distributions')}>{t('view')}</Button>
             </div>
           </CardContent>
         </Card>
@@ -249,7 +251,7 @@ export function FoundationDashboard({ isWalletConnected, walletPublicKey }: Foun
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-success" />
-              Distribuições Recentes
+              {t('recent_distributions')}
             </CardTitle>
           </CardHeader>
           <CardContent>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { NavLink, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Sidebar,
   SidebarContent,
@@ -26,29 +27,30 @@ import {
   Home
 } from 'lucide-react';
 
-const foundationItems = [
-  { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
-  { title: 'Escolas', url: '/schools', icon: School },
-  { title: 'Aprovações', url: '/approvals', icon: CheckCircle },
-  { title: 'Distribuições', url: '/distributions', icon: DollarSign },
-  { title: 'Analytics', url: '/analytics', icon: BarChart3 },
-  { title: 'Configurações', url: '/settings', icon: Settings },
-];
-
-const schoolItems = [
-  { title: 'Dashboard', url: '/dashboard', icon: Home },
-  { title: 'Minha Escola', url: '/school-profile', icon: School },
-  { title: 'Métricas', url: '/metrics', icon: TrendingUp },
-  { title: 'Recursos', url: '/resources', icon: DollarSign },
-  { title: 'Professores', url: '/teachers', icon: Users },
-  { title: 'Relatórios', url: '/reports', icon: FileText },
-];
-
 export function AppSidebar() {
+  const { t } = useTranslation();
   const { state: authState } = useAuth();
   const { state: sidebarState } = useSidebar();
   const collapsed = sidebarState === 'collapsed';
   const location = useLocation();
+
+  const foundationItems = [
+    { title: t('menu_dashboard'), url: '/dashboard', icon: LayoutDashboard },
+    { title: t('menu_schools'), url: '/schools', icon: School },
+    { title: t('menu_approvals'), url: '/approvals', icon: CheckCircle },
+    { title: t('menu_distributions'), url: '/distributions', icon: DollarSign },
+    { title: t('menu_analytics'), url: '/analytics', icon: BarChart3 },
+    { title: t('menu_settings'), url: '/settings', icon: Settings },
+  ];
+
+  const schoolItems = [
+    { title: t('menu_dashboard'), url: '/dashboard', icon: Home },
+    { title: t('menu_my_school'), url: '/school-profile', icon: School },
+    { title: t('menu_metrics'), url: '/metrics', icon: TrendingUp },
+    { title: t('menu_resources'), url: '/resources', icon: DollarSign },
+    { title: t('menu_teachers'), url: '/teachers', icon: Users },
+    { title: t('menu_reports'), url: '/reports', icon: FileText },
+  ];
   
   if (!authState.user) return null;
 
@@ -72,7 +74,7 @@ export function AppSidebar() {
             {!collapsed && (
               <div>
                 <h1 className="text-lg font-bold educhain-brand">EduChain</h1>
-                <p className="text-xs text-muted-foreground">Foundation</p>
+                <p className="text-xs text-muted-foreground">{t('menu_foundation_subtitle')}</p>
               </div>
             )}
           </div>
@@ -80,7 +82,7 @@ export function AppSidebar() {
 
         <SidebarGroup>
           <SidebarGroupLabel className={collapsed ? 'sr-only' : ''}>
-            {authState.user.role === 'foundation_manager' ? 'Gestão da Fundação' : 'Gestão Escolar'}
+            {authState.user.role === 'foundation_manager' ? t('menu_foundation_management') : t('menu_school_management')}
           </SidebarGroupLabel>
           
           <SidebarGroupContent>
@@ -109,10 +111,10 @@ export function AppSidebar() {
             <div className="bg-success/10 border border-success/20 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-2">
                 <div className="h-2 w-2 bg-success rounded-full animate-pulse" />
-                <span className="text-xs font-medium text-success">Sistema Online</span>
+                <span className="text-xs font-medium text-success">{t('menu_system_online')}</span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Blockchain Stellar conectado
+                {t('menu_stellar_connected')}
               </p>
             </div>
           </div>

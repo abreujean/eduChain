@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,7 @@ import {
 } from 'lucide-react';
 
 export function SchoolDashboard() {
+  const { t } = useTranslation();
   // Mock data - replace with actual API calls
   const schoolData = {
     name: 'Escola Comunitária Esperança',
@@ -55,20 +57,20 @@ export function SchoolDashboard() {
           <div>
             <h1 className="text-2xl font-bold mb-2">{schoolData.name}</h1>
             <p className="text-secondary-foreground/90">
-              Transformando vidas através da educação de qualidade
+              {t('transforming_lives')}
             </p>
             <div className="flex items-center gap-4 mt-3">
               <Badge variant="outline" className="text-secondary-foreground border-secondary-foreground/30">
-                {schoolData.studentsCount} estudantes
+                {schoolData.studentsCount} {t('students')}
               </Badge>
               <Badge variant="outline" className="text-secondary-foreground border-secondary-foreground/30">
-                Score: {schoolData.eligibilityScore}/100
+                {t('score')}: {schoolData.eligibilityScore}/100
               </Badge>
             </div>
           </div>
           <div className="hidden md:block">
             <div className="text-right">
-              <p className="text-sm text-secondary-foreground/80">Última Distribuição</p>
+              <p className="text-sm text-secondary-foreground/80">{t('last_distribution')}</p>
               <p className="font-semibold text-xl">R$ {schoolData.lastDistribution.amount.toLocaleString()}</p>
               <p className="text-sm">{schoolData.lastDistribution.date}</p>
             </div>
@@ -81,10 +83,10 @@ export function SchoolDashboard() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-accent" />
-            Score de Elegibilidade
+            {t('eligibility_score')}
           </CardTitle>
           <CardDescription>
-            Seu desempenho atual e áreas de melhoria
+            {t('current_performance')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -93,12 +95,12 @@ export function SchoolDashboard() {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-2xl font-bold text-accent">{schoolData.eligibilityScore}/100</span>
                 <Badge variant={schoolData.eligibilityScore >= 80 ? 'default' : schoolData.eligibilityScore >= 60 ? 'secondary' : 'destructive'}>
-                  {schoolData.eligibilityScore >= 80 ? 'Excelente' : schoolData.eligibilityScore >= 60 ? 'Bom' : 'Precisa Melhorar'}
+                  {schoolData.eligibilityScore >= 80 ? t('excellent') : schoolData.eligibilityScore >= 60 ? t('good') : t('needs_improvement')}
                 </Badge>
               </div>
               <Progress value={schoolData.eligibilityScore} className="h-3" />
               <p className="text-sm text-muted-foreground mt-2">
-                +5 pontos em relação ao mês anterior
+                {t('points_increase')}
               </p>
             </div>
           </div>
@@ -109,7 +111,7 @@ export function SchoolDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="impact-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Frequência Média</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('average_frequency')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -117,14 +119,14 @@ export function SchoolDashboard() {
               {currentMetrics.dailyAttendanceAvg}%
             </div>
             <p className="text-xs text-muted-foreground">
-              Meta: 85% (Atingida!)
+              {t('goal_reached')}
             </p>
           </CardContent>
         </Card>
 
         <Card className="impact-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Refeições Servidas</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('meals_served')}</CardTitle>
             <Utensils className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -132,14 +134,14 @@ export function SchoolDashboard() {
               {currentMetrics.mealsServed.toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground">
-              Este mês
+              {t('this_month')}
             </p>
           </CardContent>
         </Card>
 
         <Card className="impact-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Capacitação Docente</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher_training')}</CardTitle>
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -147,14 +149,14 @@ export function SchoolDashboard() {
               {currentMetrics.teacherTrainingHours}h
             </div>
             <p className="text-xs text-muted-foreground">
-              Horas de treinamento
+              {t('training_hours')}
             </p>
           </CardContent>
         </Card>
 
         <Card className="impact-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Recebido</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('total_received')}</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -162,7 +164,7 @@ export function SchoolDashboard() {
               R$ {schoolData.totalReceived.toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground">
-              Desde o cadastro
+              {t('since_registration')}
             </p>
           </CardContent>
         </Card>
@@ -174,27 +176,27 @@ export function SchoolDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-primary" />
-              Métricas Detalhadas
+              {t('detailed_metrics')}
             </CardTitle>
             <CardDescription>
-              Indicadores de desempenho atual
+              {t('performance_indicators')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm">Segurança Alimentar</span>
+              <span className="text-sm">{t('food_security')}</span>
               <span className="font-bold text-success">{Math.round(currentMetrics.foodSecurityIndex * 100)}%</span>
             </div>
             <Progress value={currentMetrics.foodSecurityIndex * 100} className="h-2" />
             
             <div className="flex items-center justify-between">
-              <span className="text-sm">Gestão Escolar</span>
+              <span className="text-sm">{t('school_management')}</span>
               <span className="font-bold text-secondary">{Math.round(currentMetrics.managementScore * 100)}%</span>
             </div>
             <Progress value={currentMetrics.managementScore * 100} className="h-2" />
             
             <div className="flex items-center justify-between">
-              <span className="text-sm">Participação Comunitária</span>
+              <span className="text-sm">{t('community_participation')}</span>
               <span className="font-bold text-accent">{Math.round(currentMetrics.communityParticipation * 100)}%</span>
             </div>
             <Progress value={currentMetrics.communityParticipation * 100} className="h-2" />
